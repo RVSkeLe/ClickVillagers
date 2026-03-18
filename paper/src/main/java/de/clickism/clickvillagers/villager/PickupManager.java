@@ -67,14 +67,24 @@ public class PickupManager implements Listener {
         return VILLAGER_WITH_PROFESSION.localized(professionName);
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = false)
     private void onPlace(BlockPlaceEvent event) {
+        if (event.isCancelled()) {
+            ClickVillagers.LOGGER.info("BlockPlace cancelled");
+        }
+
         Player player = event.getPlayer();
         PlayerInventory inventory = player.getInventory();
         ItemResult itemResult = getHeldVillagerItem(inventory);
-        if (itemResult == null) return;
+        if (itemResult == null) {
+            ClickVillagers.LOGGER.info("ItemResult is null");
+            return;
+        }
         event.setCancelled(true);
-        if (Permission.PLACE.lacksAndNotify(player)) return;
+        if (Permission.PLACE.lacksAndNotify(player)) {
+            ClickVillagers.LOGGER.info("No Permission");
+            return;
+        }
         Block block = event.getBlockPlaced();
         Location location = block.getLocation().add(.5, 0, .5);
         float yaw = player.getLocation().getYaw();
